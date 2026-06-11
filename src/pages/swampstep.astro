@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Swampstep — UUeird">
+  <main>
+    <h1>Swampstep</h1>
+    <p class="description">Our 140-focused side label.</p>
+    <a href="https://soundcloud.com/swamp-step" target="_blank" rel="noopener" class="sc-link">
+      Listen on SoundCloud
+    </a>
+  </main>
+</Base>
+
+<style>
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 6rem 2rem 4rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .description {
+    color: var(--color-muted);
+    margin-bottom: 2rem;
+  }
+
+  .sc-link {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    border-bottom: 1px solid var(--color-muted);
+    padding-bottom: 0.1em;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .sc-link:hover {
+    color: var(--color-fg);
+    border-color: var(--color-fg);
+    text-decoration: none;
+  }
+</style>
