@@ -2,29 +2,21 @@
 import Base from '../layouts/Base.astro';
 ---
 
-<Base title="UUEIRD">
+<Base title="UUeird">
   <main>
-    <header>
-      <h1>UUEIRD</h1>
-      <p class="tagline">Music label & event promoter</p>
-    </header>
-
-    <nav>
-      <a href="/releases">Releases</a>
-      <a href="/events">Events</a>
-      <a href="/about">About</a>
-    </nav>
+    <h1>UUeird</h1>
+    <p class="tagline">Music label & event promoter</p>
   </main>
 </Base>
 
 <style>
   main {
-    min-height: 100vh;
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
     padding: 2rem;
   }
 
@@ -40,18 +32,5 @@ import Base from '../layouts/Base.astro';
     color: var(--color-muted);
     letter-spacing: 0.15em;
     text-transform: uppercase;
-  }
-
-  nav {
-    display: flex;
-    gap: 2rem;
-    font-size: 0.875rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  nav a:hover {
-    color: var(--color-muted);
-    text-decoration: none;
   }
 </style>
