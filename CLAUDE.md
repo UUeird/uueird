@@ -6,8 +6,9 @@
 - `main` is the production branch — merges to `main` trigger a GitHub Pages deploy
 - Open PRs in **draft mode** by default: `gh pr create --draft --base main`
 - CI runs Playwright tests on every push to an open PR (draft or not)
-- If tests pass, CI automatically marks the PR **ready for review**
-- If tests fail on a ready PR, CI automatically converts it back to **draft**
+- CI automatically marks PR **ready for review** when tests pass (via GitHub GraphQL API)
+- CI automatically converts PR back to **draft** when tests fail
+- Do not manually mark a PR ready — let CI do it
 - Never push directly to `main`
 
 ## Testing
