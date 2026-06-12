@@ -3,11 +3,10 @@ name: Tests
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, converted_to_draft, ready_for_review]
 
 jobs:
   test:
-    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,3 +31,22 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  update-pr-state:
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Mark ready for review on pass
+        if: needs.test.result == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr ready ${{ github.event.pull_request.number }} --repo ${{ github.repository }} 2>/dev/null || true
+
+      - name: Convert to draft on failure
+        if: needs.test.result == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr ready ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --undo 2>/dev/null || true
