@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Homepage', () => {
   test('renders wordmark and tagline', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('h1')).toHaveText('UUeird');
+    await expect(page.locator('main h1')).toHaveText('UUeird');
     await expect(page.locator('.tagline')).toBeVisible();
   });
 
@@ -31,7 +31,7 @@ test.describe('Navigation', () => {
     await page.goto('/');
     await page.click('header nav a[href="/releases"]');
     await expect(page).toHaveURL(/\/releases/);
-    await expect(page.locator('h1')).toHaveText('Releases');
+    await expect(page.locator('main h1')).toHaveText('Releases');
   });
 
   test('wordmark navigates home from inner page', async ({ page }) => {
@@ -98,7 +98,7 @@ test.describe('Mobile', () => {
 
   test('homepage renders correctly on mobile', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('main h1')).toBeVisible();
     await expect(page.locator('header nav')).toBeVisible();
     await expect(page.locator('footer')).toBeVisible();
   });
@@ -125,7 +125,7 @@ test.describe('Pages', () => {
   for (const path of ['/events', '/about', '/swampstep']) {
     test(`${path} loads without error`, async ({ page }) => {
       await page.goto(path);
-      await expect(page.locator('h1')).toBeVisible();
+      await expect(page.locator('main h1')).toBeVisible();
       await expect(page.locator('header nav')).toBeVisible();
       await expect(page.locator('footer')).toBeVisible();
     });
