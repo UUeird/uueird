@@ -10,7 +10,26 @@ permissions:
   contents: read
 
 jobs:
+  set-draft:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.PR_MANAGEMENT_TOKEN }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+    steps:
+      - name: Convert to draft while tests run
+        run: |
+          PR_ID=$(gh api graphql \
+            -f query='query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){id}}}' \
+            -f owner="${{ github.repository_owner }}" \
+            -f repo="${{ github.event.repository.name }}" \
+            -F number=$PR_NUMBER \
+            --jq '.data.repository.pullRequest.id')
+          gh api graphql \
+            -f query='mutation($id:ID!){convertPullRequestToDraft(input:{pullRequestId:$id}){pullRequest{isDraft}}}' \
+            -f id="$PR_ID"
+
   test:
+    needs: set-draft
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
