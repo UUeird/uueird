@@ -1,0 +1,94 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+concurrency:
+  group: test-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  set-draft:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.PR_MANAGEMENT_TOKEN }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+    steps:
+      - name: Convert to draft while tests run
+        run: |
+          PR_ID=$(gh api graphql \
+            -f query='query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){id}}}' \
+            -f owner="${{ github.repository_owner }}" \
+            -f repo="${{ github.event.repository.name }}" \
+            -F number=$PR_NUMBER \
+            --jq '.data.repository.pullRequest.id')
+          gh api graphql \
+            -f query='mutation($id:ID!){convertPullRequestToDraft(input:{pullRequestId:$id}){pullRequest{isDraft}}}' \
+            -f id="$PR_ID"
+
+  test:
+    needs: set-draft
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v5
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+      - run: npx playwright install-deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+      - run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  update-pr-state:
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+    env:
+      GH_TOKEN: ${{ secrets.PR_MANAGEMENT_TOKEN }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Get PR node ID
+        id: pr-id
+        run: |
+          PR_ID=$(gh api graphql \
+            -f query='query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){id}}}' \
+            -f owner="${{ github.repository_owner }}" \
+            -f repo="${{ github.event.repository.name }}" \
+            -F number=$PR_NUMBER \
+            --jq '.data.repository.pullRequest.id')
+          echo "pr_id=$PR_ID" >> $GITHUB_OUTPUT
+
+      - name: Mark ready for review
+        if: needs.test.result == 'success'
+        run: |
+          gh api graphql \
+            -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{isDraft}}}' \
+            -f id="${{ steps.pr-id.outputs.pr_id }}"
+
+      - name: Convert to draft
+        if: needs.test.result == 'failure'
+        run: |
+          gh api graphql \
+            -f query='mutation($id:ID!){convertPullRequestToDraft(input:{pullRequestId:$id}){pullRequest{isDraft}}}' \
+            -f id="${{ steps.pr-id.outputs.pr_id }}"
