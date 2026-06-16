@@ -18,7 +18,9 @@ const { title, description = 'UUeird — music label and event promoter' } = Ast
   </head>
   <body>
     <header>
-      <a href="/" class="wordmark">UUeird</a>
+      <a href="/" class="wordmark">
+        <img src="/UUATERMARK-b-fill.png" alt="UUeird" />
+      </a>
       <nav>
         <a href="/releases">Releases</a>
         <a href="/events">Events</a>
@@ -119,9 +121,14 @@ const { title, description = 'UUeird — music label and event promoter' } = Ast
   }
 
   header .wordmark {
-    font-size: 0.875rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  header .wordmark img {
+    height: 6.5rem;
+    width: auto;
   }
 
   header nav {
@@ -130,6 +137,16 @@ const { title, description = 'UUeird — music label and event promoter' } = Ast
     font-size: 0.75rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
+  }
+
+  @media (max-width: 480px) {
+    header {
+      padding: 1rem;
+    }
+
+    header nav {
+      gap: 1rem;
+    }
   }
 
   header nav a {

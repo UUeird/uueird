@@ -4,16 +4,6 @@ import Base from '../layouts/Base.astro';
 
 const allReleases = await getCollection('releases');
 const releases = allReleases.sort((a, b) => b.data.date.localeCompare(a.data.date));
-
-const platformLabels: Record<string, string> = {
-  bandcamp: 'Bandcamp',
-  spotify: 'Spotify',
-  apple_music: 'Apple Music',
-  soundcloud: 'SoundCloud',
-  amazon_music: 'Amazon Music',
-  beatport: 'Beatport',
-  juno: 'Juno',
-};
 ---
 
 <Base title="Releases — UUeird">
@@ -72,6 +62,26 @@ const platformLabels: Record<string, string> = {
     juno: 'Juno',
   };
 
+  const platformSvg: Record<string, string> = {
+    bandcamp: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 18.75l7.437-13.5H24l-7.438 13.5H0z"/></svg>`,
+    spotify: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`,
+    apple_music: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 00-1.877-.726 10.496 10.496 0 00-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 001.57-.1c.822-.106 1.596-.35 2.295-.81a5.046 5.046 0 001.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.045-1.773-.6-1.943-1.536a1.88 1.88 0 011.038-2.022c.323-.16.67-.25 1.018-.324.378-.082.758-.153 1.134-.24.274-.063.457-.23.51-.516a.904.904 0 00.02-.193c0-1.815 0-3.63-.002-5.443a.725.725 0 00-.026-.185c-.04-.15-.15-.243-.304-.234-.16.01-.318.035-.475.066-.76.15-1.52.303-2.28.456l-2.325.47-1.374.278c-.016.003-.032.01-.048.013-.277.077-.377.203-.39.49-.002.042 0 .086 0 .13-.002 2.602 0 5.204-.003 7.805 0 .42-.047.836-.215 1.227-.278.64-.77 1.04-1.434 1.233-.35.1-.71.16-1.075.172-.96.036-1.755-.6-1.92-1.544-.14-.812.23-1.685 1.154-2.075.357-.15.73-.232 1.108-.31.287-.06.575-.116.86-.177.383-.083.583-.323.6-.714v-.15c0-2.96 0-5.922.002-8.882 0-.123.013-.25.042-.37.07-.285.273-.448.546-.518.255-.066.515-.112.774-.165.733-.15 1.466-.296 2.2-.444l2.27-.46c.67-.134 1.34-.27 2.01-.403.22-.043.442-.088.663-.106.31-.025.523.17.554.482.008.073.012.148.012.223.002 1.91.002 3.822 0 5.732z"/></svg>`,
+    soundcloud: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.999 14.165c-.052 1.796-1.612 3.169-3.4 3.169h-8.18a.68.68 0 01-.675-.683V7.862a.747.747 0 01.452-.724s.75-.513 2.333-.513a5.364 5.364 0 012.763.755 5.433 5.433 0 012.57 3.54c.282-.08.574-.121.868-.12.884 0 1.73.358 2.347.992s.948 1.49.922 2.373zM10.721 8.421c.247 2.98.427 5.697 0 8.672a.264.264 0 01-.53 0c-.395-2.946-.22-5.718 0-8.672a.264.264 0 01.53 0zM9.072 9.448c.285 2.659.37 4.986-.006 7.655a.277.277 0 01-.55 0c-.331-2.63-.256-5.02 0-7.655a.277.277 0 01.556 0zm-1.663-.257c.27 2.726.39 5.171 0 7.904a.266.266 0 01-.532 0c-.38-2.69-.257-5.21 0-7.904a.266.266 0 01.532 0zm-1.647.77a26.108 26.108 0 01-.008 7.147.272.272 0 01-.542 0 27.955 27.955 0 010-7.147.275.275 0 01.55 0zm-1.67 1.769c.421 1.865.228 3.5-.029 5.388a.257.257 0 01-.514 0c-.21-1.858-.398-3.549 0-5.389a.272.272 0 01.543 0zm-1.655-.273c.388 1.897.26 3.508-.01 5.412-.026.28-.514.283-.54 0-.244-1.878-.347-3.54-.01-5.412a.283.283 0 01.56 0zm-1.668.911c.4 1.268.257 2.292-.026 3.572a.257.257 0 01-.514 0c-.241-1.262-.354-2.312-.023-3.572a.283.283 0 01.563 0z"/></svg>`,
+    amazon_music: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.958 10.09c0 1.232.029 2.256-.59 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.698-3.182v.685zm3.186 7.705a.661.661 0 01-.75.074c-1.052-.873-1.238-1.279-1.814-2.113-1.734 1.767-2.962 2.297-5.209 2.297-2.66 0-4.731-1.641-4.731-4.925 0-2.565 1.391-4.309 3.37-5.164 1.715-.754 4.11-.891 5.942-1.095v-.41c0-.753.06-1.642-.384-2.294-.385-.579-1.124-.82-1.775-.82-1.205 0-2.277.618-2.54 1.897-.053.285-.26.566-.548.58l-3.064-.333c-.259-.056-.547-.271-.472-.674C5.982 2.535 8.867 1.6 11.442 1.6c1.318 0 3.04.351 4.079 1.347 1.317 1.23 1.191 2.873 1.191 4.661v4.22c0 1.269.526 1.826 1.021 2.512.178.247.216.543-.009.725-.552.461-1.532 1.318-2.072 1.799l-.008-.069zM22.498 19.472c-2.504 1.851-6.135 2.836-9.263 2.836-4.381 0-8.324-1.621-11.305-4.317-.234-.212-.025-.501.256-.336 3.218 1.873 7.191 2.998 11.3 2.998 2.771 0 5.817-.574 8.622-1.764.423-.181.778.277.39.583zm1.109-1.261c-.32-.41-2.117-.195-2.926-.098-.246.03-.284-.184-.062-.34 1.433-1.007 3.785-.716 4.063-.379.278.338-.073 2.685-1.418 3.806-.207.173-.404.081-.312-.147.302-.755.978-2.448.655-2.842z"/></svg>`,
+    beatport: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1.53 6.47h1.59v4.27a3.27 3.27 0 011.94-.63 3.34 3.34 0 010 6.68 3.27 3.27 0 01-1.94-.63v.54h-1.59V6.47zm3.21 8.73a1.75 1.75 0 100-3.5 1.75 1.75 0 000 3.5z"/></svg>`,
+    juno: `<svg viewBox="0 0 24 24" fill="currentColor"><text x="2" y="18" font-size="14" font-family="sans-serif" font-weight="bold">J</text></svg>`,
+  };
+
+  const platformColor: Record<string, string> = {
+    bandcamp: '#629aa9',
+    spotify: '#1db954',
+    apple_music: '#fa57c1',
+    soundcloud: '#ff5500',
+    amazon_music: '#00a8e1',
+    beatport: '#a8e00f',
+    juno: '#ff7e00',
+  };
+
   const modal      = document.getElementById('modal')!;
   const backdrop   = document.getElementById('modal-backdrop')!;
   const closeBtn   = document.getElementById('modal-close')!;
@@ -80,6 +90,35 @@ const platformLabels: Record<string, string> = {
   const titleEl    = document.getElementById('modal-title')!;
   const linksEl    = document.getElementById('modal-links')!;
 
+  function buildLinks(links: Record<string, string>) {
+    const entries = Object.entries(links).filter(([, url]) => url);
+    linksEl.innerHTML = '';
+
+    entries.forEach(([platform, url]) => {
+      const li = document.createElement('li');
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.className = 'link-row';
+      a.style.setProperty('--brand', platformColor[platform] ?? '#888');
+
+      const icon = document.createElement('span');
+      icon.className = 'link-icon';
+      icon.innerHTML = platformSvg[platform] ?? `<svg viewBox="0 0 24 24"><text x="2" y="18" font-size="10">${platform[0].toUpperCase()}</text></svg>`;
+
+      const label = document.createElement('span');
+      label.className = 'link-text';
+      label.textContent = platformLabels[platform] ?? platform;
+
+      a.appendChild(icon);
+      a.appendChild(label);
+      li.appendChild(a);
+      linksEl.appendChild(li);
+    });
+  }
+
   function openModal(card: HTMLElement) {
     const links: Record<string, string> = JSON.parse(card.dataset.links!);
 
@@ -87,11 +126,7 @@ const platformLabels: Record<string, string> = {
     artistEl.textContent = card.dataset.artist!;
     titleEl.textContent  = card.dataset.title!;
 
-    linksEl.innerHTML = Object.entries(links)
-      .filter(([, url]) => url)
-      .map(([platform, url]) =>
-        `<li><a href="${url}" target="_blank" rel="noopener">${platformLabels[platform] ?? platform}</a></li>`
-      ).join('');
+    buildLinks(links);
 
     modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('open');
@@ -102,7 +137,6 @@ const platformLabels: Record<string, string> = {
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
-    // defer clearing src so the close animation plays first
     setTimeout(() => { embedFrame.src = ''; }, 300);
   }
 
@@ -119,7 +153,7 @@ const platformLabels: Record<string, string> = {
   main {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 6rem 2rem 4rem;
+    padding: 9rem 2rem 4rem;
   }
 
   h1 {
@@ -211,6 +245,9 @@ const platformLabels: Record<string, string> = {
     inset: 0;
     background: rgba(0, 0, 0, 0.88);
     backdrop-filter: blur(8px);
+    /* isolate the blur onto its own layer so hover changes inside the card
+       don't force the (expensive) full-viewport blur to re-evaluate */
+    will-change: transform;
   }
 
   #modal-card {
@@ -221,6 +258,10 @@ const platformLabels: Record<string, string> = {
     width: min(800px, 100%);
     background: #111;
     animation: modal-enter 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    /* own compositor layer: hover transforms inside the card stay off the
+       backdrop-blur layer */
+    transform: translateZ(0);
+    isolation: isolate;
   }
 
   @keyframes modal-enter {
@@ -277,38 +318,81 @@ const platformLabels: Record<string, string> = {
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.2;
-    margin-bottom: 1rem;
-  }
-
-  #modal-links {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  #modal-links a {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-muted);
-    border-bottom: 1px solid #2a2a2a;
-    padding-bottom: 0.2em;
-    transition: color 0.15s, border-color 0.15s;
-  }
-
-  #modal-links a:hover {
-    color: var(--color-fg);
-    border-color: var(--color-fg);
-    text-decoration: none;
+    margin-bottom: 0.5rem;
   }
 
   @media (max-width: 560px) {
     #modal-card {
       grid-template-columns: 1fr;
     }
-    #modal-embed-col {
-      aspect-ratio: 1;
+  }
+</style>
+
+<!-- Link rows are created in client JS with document.createElement, so they
+     never receive Astro's scoped style hash. These rules must be global. -->
+<style is:global>
+  #modal-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .link-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--color-muted);
+    /* transform-origin left so the row grows rightward, not off-center */
+    transform-origin: left center;
+    transition: color 0.18s ease, transform 0.18s ease;
+  }
+
+  .link-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--brand, #888);
+  }
+
+  .link-icon svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .link-text {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .link-row:hover {
+    color: var(--brand, #f0f0f0);
+    transform: scale(1.12);
+    text-decoration: none;
+  }
+
+  /* mobile: no hover effects, slightly larger tap targets */
+  @media (max-width: 560px) {
+    .link-row {
+      transform: none !important;
+      gap: 0.7rem;
+      padding: 0.15rem 0;
+    }
+
+    .link-row:hover {
+      color: var(--color-muted);
+    }
+
+    .link-icon {
+      color: var(--brand, #888);
     }
   }
 </style>
