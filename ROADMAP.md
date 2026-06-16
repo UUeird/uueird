@@ -6,6 +6,7 @@
   - [x] Click-to-open modal with Bandcamp embed + streaming links
   - [x] Release data in content collections (JSON per release)
   - [x] Sorted by release date
+  - [x] Orbiting streaming-service badge ring (CSS Ferris-wheel, hover to pause/enlarge)
   - [ ] Verify modal layout and feel on mobile
 
 ---
