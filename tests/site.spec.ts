@@ -147,8 +147,36 @@ test.describe('Mobile', () => {
   test('homepage renders correctly on mobile', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('main h1')).toBeVisible();
-    await expect(page.locator('header nav')).toBeVisible();
+    await expect(page.locator('header .menu-toggle')).toBeVisible();
+    await expect(page.locator('header nav')).toBeHidden();
     await expect(page.locator('footer')).toBeVisible();
+  });
+
+  test('menu toggle opens and closes the nav', async ({ page }) => {
+    await page.goto('/');
+    const toggle = page.locator('header .menu-toggle');
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.locator('header nav a[href="/releases"]')).toBeVisible();
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('header nav')).toBeHidden();
+  });
+
+  test('menu closes on Escape', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('header .menu-toggle').click();
+    await expect(page.locator('header nav')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('header nav')).toBeHidden();
+  });
+
+  test('menu link navigates', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('header .menu-toggle').click();
+    await page.click('header nav a[href="/releases"]');
+    await expect(page).toHaveURL(/\/releases/);
+    await expect(page.locator('main h1')).toHaveText('Releases');
   });
 
   test('releases grid renders on mobile', async ({ page }) => {
