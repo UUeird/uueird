@@ -23,6 +23,45 @@ test.describe('Homepage', () => {
     await expect(page.locator('footer a[href="https://uueird.bandcamp.com/"]')).toBeVisible();
     await expect(page.locator('footer a[href="https://x.com/UUeirdBass"]')).toBeVisible();
   });
+
+  test('signup form submits to Mailchimp and shows the response', async ({ page }) => {
+    let requested: URL | undefined;
+    await page.route('**/subscribe/post-json**', (route) => {
+      requested = new URL(route.request().url());
+      const callback = requested.searchParams.get('c');
+      route.fulfill({
+        contentType: 'application/javascript',
+        body: `${callback}(${JSON.stringify({ result: 'success', msg: 'Thank you for subscribing!' })})`,
+      });
+    });
+
+    await page.goto('/');
+    await page.fill('#signup input[name="EMAIL"]', 'test@example.com');
+    await page.click('#signup button[type="submit"]');
+
+    await expect(page.locator('#signup .status')).toHaveText('Thank you for subscribing!');
+    expect(requested?.searchParams.get('u')).toBe('75f15b47333ffdb34d98a3e2e');
+    expect(requested?.searchParams.get('id')).toBe('8c7d6b592d');
+    expect(requested?.searchParams.get('EMAIL')).toBe('test@example.com');
+    await expect(page.locator('#signup input[name="EMAIL"]')).toHaveValue('');
+  });
+
+  test('signup form shows Mailchimp errors without the field prefix', async ({ page }) => {
+    await page.route('**/subscribe/post-json**', (route) => {
+      const callback = new URL(route.request().url()).searchParams.get('c');
+      route.fulfill({
+        contentType: 'application/javascript',
+        body: `${callback}(${JSON.stringify({ result: 'error', msg: '0 - Please enter a <b>valid</b> email' })})`,
+      });
+    });
+
+    await page.goto('/');
+    await page.fill('#signup input[name="EMAIL"]', 'bad@example.com');
+    await page.click('#signup button[type="submit"]');
+
+    await expect(page.locator('#signup .status')).toHaveText('Please enter a valid email');
+    await expect(page.locator('#signup .status')).toHaveAttribute('data-result', 'error');
+  });
 });
 
 // --- Navigation ---
