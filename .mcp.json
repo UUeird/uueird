@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "tada": {
+      "command": "/Users/samlawrence/Documents/src/tada/app/node_modules/.bin/tsx",
+      "args": [
+        "--env-file-if-exists=/Users/samlawrence/Documents/src/tada/app/.env.local",
+        "/Users/samlawrence/Documents/src/tada/app/mcp/server.ts",
+        "--project", "uueird",
+        "--owner-email", "sam@samelawrence.com",
+        "--url", "https://app.tada-ai.app",
+        "--prod"
+      ]
+    }
+  }
+}

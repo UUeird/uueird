@@ -11,6 +11,11 @@
 - Do not manually mark a PR ready — let CI do it
 - Never push directly to `main`
 
+## Plan Board
+
+- The plan lives on the tada board `uueird` (https://app.tada-ai.app), read and edited via the `tada` MCP server in `.mcp.json`
+- `/tada` picks up the next In Progress story; `/release` ships it and moves the ticket to done once deployed
+
 ## Testing
 
 - Tests live in `tests/site.spec.ts`, run with `npm test`
