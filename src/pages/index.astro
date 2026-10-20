@@ -1,13 +1,75 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const mailchimp = {
+  url: 'https://uueird.us1.list-manage.com/subscribe/post',
+  u: '75f15b47333ffdb34d98a3e2e',
+  id: '8c7d6b592d',
+};
 ---
 
 <Base title="UUeird">
   <main>
     <h1>UUeird</h1>
     <p class="tagline">Music label & event promoter</p>
+    <form
+      id="signup"
+      action={`${mailchimp.url}?u=${mailchimp.u}&id=${mailchimp.id}`}
+      method="post"
+      target="_blank"
+    >
+      <label for="signup-email">Join the mailing list</label>
+      <div class="fields">
+        <input id="signup-email" type="email" name="EMAIL" placeholder="Email" autocomplete="email" required />
+        <button type="submit">Subscribe</button>
+      </div>
+      <div class="honeypot" aria-hidden="true">
+        <input type="text" name={`b_${mailchimp.u}_${mailchimp.id}`} tabindex="-1" value="" />
+      </div>
+      <p class="status" role="status"></p>
+    </form>
   </main>
 </Base>
+
+<script>
+  const form = document.getElementById('signup') as HTMLFormElement;
+  const status = form.querySelector('.status') as HTMLParagraphElement;
+  const button = form.querySelector('button') as HTMLButtonElement;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const callback = `mcSignup${Date.now()}`;
+    const params = new URLSearchParams(new FormData(form) as unknown as Record<string, string>);
+    params.set('c', callback);
+    const url = form.action.replace('/subscribe/post?', '/subscribe/post-json?') + '&' + params;
+
+    const script = document.createElement('script');
+    const cleanup = () => {
+      delete (window as any)[callback];
+      script.remove();
+      button.disabled = false;
+    };
+
+    (window as any)[callback] = (res: { result: string; msg: string }) => {
+      cleanup();
+      // Mailchimp prefixes field errors with "N - " and may include HTML links
+      const msg = new DOMParser().parseFromString(res.msg, 'text/html').body.textContent ?? '';
+      status.textContent = msg.replace(/^\d+ - /, '');
+      status.dataset.result = res.result;
+      if (res.result === 'success') form.reset();
+    };
+    script.onerror = () => {
+      cleanup();
+      status.textContent = 'Something went wrong. Please try again.';
+      status.dataset.result = 'error';
+    };
+
+    button.disabled = true;
+    status.textContent = '';
+    script.src = url;
+    document.body.appendChild(script);
+  });
+</script>
 
 <style>
   main {
@@ -32,5 +94,85 @@ import Base from '../layouts/Base.astro';
     color: var(--color-muted);
     letter-spacing: 0.15em;
     text-transform: uppercase;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 28rem;
+  }
+
+  label {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .fields {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  input,
+  button {
+    font: inherit;
+    font-size: 0.875rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--color-muted);
+    border-radius: 0;
+    background: transparent;
+    color: var(--color-fg);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--color-fg);
+  }
+
+  button {
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    background: var(--color-fg);
+    color: var(--color-bg);
+    border-color: var(--color-fg);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .honeypot {
+    position: absolute;
+    left: -5000px;
+  }
+
+  .status {
+    font-size: 0.875rem;
+    min-height: 1.5em;
+    text-align: center;
+  }
+
+  .status[data-result='error'] {
+    color: #e66;
+  }
+
+  @media (max-width: 480px) {
+    .fields {
+      flex-direction: column;
+    }
   }
 </style>
