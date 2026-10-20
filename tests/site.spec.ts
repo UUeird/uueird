@@ -64,6 +64,15 @@ test.describe('Releases', () => {
     await expect(page.locator('#modal-embed')).toBeVisible();
   });
 
+  test('modal shows release artwork behind the loading player', async ({ page }) => {
+    await page.goto('/releases');
+    const card = page.locator('.card').nth(1);
+    const artwork = await card.getAttribute('data-artwork');
+    await card.click();
+    await expect(page.locator('#modal-art')).toHaveAttribute('src', artwork!);
+    await expect(page.locator('#modal-art')).toBeVisible();
+  });
+
   test('modal closes on backdrop click', async ({ page }) => {
     await page.goto('/releases');
     await page.locator('.card').first().click();
