@@ -21,7 +21,11 @@ const { title, description = 'UUeird — music label and event promoter' } = Ast
       <a href="/" class="wordmark">
         <img src="/UUATERMARK-b-fill.png" alt="UUeird" />
       </a>
-      <nav>
+      <button class="menu-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span>
+        <span></span>
+      </button>
+      <nav id="site-nav">
         <a href="/releases">Releases</a>
         <a href="/events">Events</a>
         <a href="/swampstep">Swampstep</a>
@@ -69,6 +73,25 @@ const { title, description = 'UUeird — music label and event promoter' } = Ast
     </footer>
   </body>
 </html>
+
+<script>
+  const header = document.querySelector('header') as HTMLElement;
+  const toggle = header.querySelector('.menu-toggle') as HTMLButtonElement;
+
+  const setOpen = (open: boolean) => {
+    header.classList.toggle('menu-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
+  toggle.addEventListener('click', () => setOpen(!header.classList.contains('menu-open')));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && header.classList.contains('menu-open')) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+</script>
 
 <style is:global>
   *, *::before, *::after {
@@ -143,10 +166,6 @@ const { title, description = 'UUeird — music label and event promoter' } = Ast
     header {
       padding: 1rem;
     }
-
-    header nav {
-      gap: 1rem;
-    }
   }
 
   header nav a {
@@ -156,6 +175,64 @@ const { title, description = 'UUeird — music label and event promoter' } = Ast
   header nav a:hover {
     color: var(--color-fg);
     text-decoration: none;
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+
+  @media (max-width: 720px) {
+    .menu-toggle {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      width: 2.75rem;
+      height: 2.75rem;
+      padding: 0.6rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .menu-toggle span {
+      display: block;
+      height: 1.5px;
+      background: var(--color-fg);
+      transition: transform 0.2s;
+    }
+
+    header.menu-open .menu-toggle span:first-child {
+      transform: translateY(3.75px) rotate(45deg);
+    }
+
+    header.menu-open .menu-toggle span:last-child {
+      transform: translateY(-3.75px) rotate(-45deg);
+    }
+
+    header nav {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 2.5rem;
+      font-size: 1.25rem;
+      background: var(--color-bg);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    header.menu-open nav {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    header nav a {
+      color: var(--color-fg);
+    }
   }
 
   footer {
