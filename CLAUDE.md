@@ -27,7 +27,7 @@
 ## Content Collections
 
 - Release data lives in `src/content/releases/` — one JSON file per release
-- Schema is defined in `src/content/config.ts`
+- Schema is defined in `src/content.config.ts`
 - To add a new release: drop a new JSON file in `src/content/releases/` with fields:
   - `title`, `artist`, `artwork` (Bandcamp CDN URL)
   - `date` (YYYY-MM-DD, sourced from Bandcamp release page)
