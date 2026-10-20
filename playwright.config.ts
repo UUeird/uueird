@@ -17,7 +17,7 @@ export default defineConfig({
     { name: 'webkit',   use: { ...devices['Desktop Safari'] } },
   ],
   webServer: {
-    command: 'npm run dev -- --port 4322',
+    command: 'npm run dev -- --port 4322 --ignore-lock',
     url: 'http://localhost:4322',
     reuseExistingServer: !process.env.CI,
     timeout: 30000,
