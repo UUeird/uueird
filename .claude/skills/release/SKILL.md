@@ -1,13 +1,51 @@
 ---
 name: release
-description: "Ship open work: commit, push, open the draft PR to main, wait for CI to mark it ready, merge, confirm the GitHub Pages deploy, move the board ticket. Use when the user says 'release', 'ship it', 'land this'. The gate for moving the board ticket to done is the Deploy run publishing the merge commit and the live site serving it."
+description: "Ship open work, one PR or (with no args) every open PR checked once on one integration branch: commit, push, open the draft PR to main, wait for CI to mark it ready, merge, confirm the GitHub Pages deploy, move the board ticket. Use when the user says 'release', 'ship it', 'land this'. The gate for moving the board ticket to done is the Deploy run publishing the merge commit and the live site serving it."
 ---
 
-Take one piece of open work from branch to merged, deployed, and cleaned up.
+Take open work from branch to merged, deployed, and cleaned up: one PR, or every open PR at once.
 Two workflows matter: `.github/workflows/test.yml` ("Tests") runs Playwright on
 every push to a PR against `main` and flips the PR between draft and ready, and
 `.github/workflows/deploy.yml` ("Deploy to GitHub Pages") builds and deploys on
-pushes to `main`. This is a single-PR flow with no batching.
+pushes to `main`. Several PRs release together, checked once (next section).
+
+## Several PRs at once: one integration branch, checked once
+
+With no args, release **every open PR** (`gh pr list`, oldest first, a stacked
+PR right after its base; skip bot PRs) together, checked once on one tree
+holding them all. With one PR, the steps below are the whole flow.
+
+1. **Finish and push each PR** (step 1 below), without running its checks yet.
+2. **Build the integration branch.** Merge every PR branch onto `main`'s tip,
+   in release order, on a local scratch branch that is never pushed:
+   ```
+   git checkout main && git pull --ff-only
+   git checkout -b release-verify
+   git merge --no-edit <branch-1>
+   git merge --no-edit <branch-2>   # …and so on
+   ```
+   **On a conflict**, `git merge --abort` and fix it on the later PR's branch
+   (merge `main` or the earlier PR's branch into it there), push, delete
+   `release-verify` (`git checkout main && git branch -D release-verify`) and
+   rebuild. A resolution made only on the scratch branch would never land.
+3. **Check it once, on `release-verify`:** `npm test`. **Never merge known-red**:
+   find which PR a failure belongs to, fix it on that PR's branch, push,
+   rebuild the integration branch and check again.
+4. **Merge every PR in order**, only after step 3 passes, and CI has marked each PR ready (its own run of the tests on that PR). If
+   another open PR is stacked on a branch, retarget it to `main` first
+   (`gh pr edit <stacked> --base main`): deleting a PR's base branch closes
+   that PR. Merge each with `gh pr merge <PR#> --merge`.
+5. **Confirm what landed is what was tested:**
+   ```
+   git checkout main && git pull --ff-only
+   git diff --stat release-verify main   # must print nothing
+   ```
+   If it isn't empty, `main` moved while you were checking: stop, rebuild the
+   integration branch for the PRs still open and check again. Once it's empty,
+   `git branch -D release-verify` (the one `-D`: a local scratch branch that
+   never had a remote), and clean up each PR branch (step 3 below).
+6. **Confirm the deploy once**, for the last merge commit, which holds every PR (step 4 below; earlier runs may be superseded). Then move the board ticket of
+   every PR (step 5 below) and report the check run once, then one line per PR.
 
 ### 1. Finish and push
 
